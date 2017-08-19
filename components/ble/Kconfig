@@ -1,4 +1,4 @@
-menu "BT Server"
+menu "BT"
 
 config SET_RAW_ADV_DATA
     bool "Use raw data for advertising packets and scan response data"

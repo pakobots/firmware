@@ -1,4 +1,4 @@
-# Pako Bot Firmware 
+# Pako Bot Firmware
 
 ## ESP32
 
@@ -22,4 +22,6 @@ More information is provided on the Espressif website in regards to make command
 ### Folder Structure
 The most interesting code parts are found in the components directory. The components are arranged according to function of the system. The main.c file, found in the 'main' folder, is only a thin layer to launch the system. The robot component provides GPIO calls to manipulate movement and the LED functionality.
 
- 
+## Credits
+
+Thank you to Thomas Barth for an example of [websockets on the ESP32](https://github.com/ThomasBarth/WebSockets-on-the-ESP32)
