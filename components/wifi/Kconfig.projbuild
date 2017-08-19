@@ -1,0 +1,15 @@
+menu "WIFI Configuration"
+
+config WIFI_AP_SSID
+    string "ssid"
+    default "Pako Bots"
+    help
+        SSID (network name) AP network name shown in the broadcast.
+
+config WIFI_AP_PASSWORD
+    string "password"
+    default ""
+    help
+        WiFi password required for a client to connect. Leave this blank for no password.
+
+endmenu
