@@ -318,8 +318,8 @@ wifi_enable(evt_connected_callback evt_callback){
 
     size_t len = 0;
     storage_len(WIFI_STORAGE_KEY, "ssid", &len);
-    if (len == 0) {
-        printf("We don't have a ssid set for the wifi station. Need to switch to ap mode");
+    if (len < 2) {
+        printf("We don't have a ssid set for the wifi station. Need to switch to ap mode\n");
         wifi_ap();
     } else {
         char ssid[len + 1];
@@ -334,6 +334,7 @@ wifi_enable(evt_connected_callback evt_callback){
         } else {
             storage_get(WIFI_STORAGE_KEY, "pass", (char *) &pass, &len);
         }
+        printf("Connecting to wifi ap: %s %d\n", ssid, len);
         wifi_connect(ssid, pass, false);
     }
 } /* wifi_enable */
