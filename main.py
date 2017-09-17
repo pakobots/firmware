@@ -78,7 +78,7 @@ class Driver():
             bots = self.findBots()
             if len(bots) == 0:
                 self.window.setMessage(
-                    'Not robots found. Please ensure the robot is connected')
+                    'No robots found. Please ensure the robot is connected')
                 self.window.setLoading(False)
                 return
             if self.stopped.is_set():
@@ -148,9 +148,9 @@ class Driver():
         latest = {'pako_version': 0}
         for x, release in enumerate(esp32):
             self.window.setPercent((x + 1) / float(len(esp32)) * 100)
-            num = long(0)
+            num = 0
             for i, dot in enumerate(reversed(release['tag_name'][6:].split('.', 3))):
-                num += long(dot) << (i * 8)
+                num += int(dot) << (i * 8)
             if num > latest['pako_version']:
                 latest = esp32[x]
         return Release(latest)
@@ -199,7 +199,7 @@ class Driver():
             if self.stopped.is_set():
                 return
             self.window.setPercent(100 * (seq + 1) / blocks)
-            print('\rWriting at 0x%08x... (%d %%)' % (address + seq * stub.FLASH_WRITE_SIZE, 100 * (seq + 1) // blocks), end='')
+            print('\rWriting at 0x%08x... (%d %%)' % (address + seq * stub.FLASH_WRITE_SIZE, 100 * (seq + 1) // blocks),)
             sys.stdout.flush()
             block = image[0:stub.FLASH_WRITE_SIZE]
             stub.flash_defl_block(block, seq)
