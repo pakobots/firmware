@@ -65,7 +65,7 @@ class Driver():
     window = {}
 
     def start(self, window):
-        print 'starting driver'
+        print('starting driver')
         threading.Thread(target=self.loadFirmware, args=(window,)).start()
 
     def stop(self):
@@ -100,7 +100,6 @@ class Driver():
         self.window.setPercent(0)
         ports = self.getSerialPorts()
         out = []
-        print ports
         for i, p in enumerate(ports):
             # If a robot is found just exit for today.
             # In the future all robots will be caputred and programmed
@@ -200,7 +199,7 @@ class Driver():
             if self.stopped.is_set():
                 return
             self.window.setPercent(100 * (seq + 1) / blocks)
-            print '\rWriting at 0x%08x... (%d %%)' % (address + seq * stub.FLASH_WRITE_SIZE, 100 * (seq + 1) // blocks),
+            print('\rWriting at 0x%08x... (%d %%)' % (address + seq * stub.FLASH_WRITE_SIZE, 100 * (seq + 1) // blocks), end='')
             sys.stdout.flush()
             block = image[0:stub.FLASH_WRITE_SIZE]
             stub.flash_defl_block(block, seq)
@@ -242,7 +241,7 @@ class RootWidget(GridLayout):
         self.message.text = '[color=333333]%s[/color]' % (message)
 
     def setPercent(self, percent):
-        print 'setting percent of progress bar'
+        print('setting percent of progress bar')
         self.percent.value = percent
 
     def setLoading(self, isLoading):
