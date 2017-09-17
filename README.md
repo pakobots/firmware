@@ -1,7 +1,6 @@
-# Pako Bot Firmware
+# Pako Bot Flash GUI
 
-The firmware repository contains code used to control the robot directly. Please refer to the specific git branch pertaining to the control board attached to the particular robot.
+This branch contains the code for the ESP32 flash GUI application.
 
-## Firmware ESP32
-[ESP32](https://github.com/pakobots/firmware/tree/esp32)
-[ESP32 Flash GUI](https://github.com/pakobots/firmware/tree/flash)
+## Lastest Releases
+[Latest Release](https://github.com/pakobots/firmware/releases)
