@@ -26,9 +26,20 @@ import zlib
 import hashlib
 import requests
 import json
+
+# Used in esptool. Added to enable pyinstaller to pull correct deps
+import argparse
+import inspect
+import struct
+import base64
+import shlex
+import copy
+import io
+# Used in esptool. Added to enable pyinstaller to pull correct deps
+
 from distutils.version import StrictVersion
 
-sys.path.append('./esptool')
+sys.path.append(os.getcwd() + '/esptool')
 import esptool
 
 kivy.require('1.10.0')  # replace with your current kivy version !
@@ -199,7 +210,8 @@ class Driver():
             if self.stopped.is_set():
                 return
             self.window.setPercent(100 * (seq + 1) / blocks)
-            print('\rWriting at 0x%08x... (%d %%)' % (address + seq * stub.FLASH_WRITE_SIZE, 100 * (seq + 1) // blocks),)
+            print('\rWriting at 0x%08x... (%d %%)' % (address + seq *
+                                                      stub.FLASH_WRITE_SIZE, 100 * (seq + 1) // blocks),)
             sys.stdout.flush()
             block = image[0:stub.FLASH_WRITE_SIZE]
             stub.flash_defl_block(block, seq)
@@ -226,7 +238,7 @@ class RootWidget(GridLayout):
 
     percent = ProgressBar(value=0, max=100)
     message = Label(text='', markup=True)
-    refresh = Button(background_normal='img/refresh.png', background_down='img/refresh_over.png', size_hint_x=None,
+    refresh = Button(background_normal=os.getcwd() + '/img/refresh.png', background_down=os.getcwd() + '/img/refresh_over.png', size_hint_x=None,
                      width=136, size_hint_y=None, height=35)
     loadingPanel = AnchorLayout()
 
@@ -255,7 +267,7 @@ class RootWidget(GridLayout):
     def buildHeader(self):
         header = AnchorLayout(anchor_x='left', anchor_y='center',
                               size_hint_y=None, height=60, size_hint_x=None)
-        image = Image(source='img/logo.png', allow_stretch=True, keep_ratio=True,
+        image = Image(source=os.getcwd() + '/img/logo.png', allow_stretch=True, keep_ratio=True,
                       size_hint_y=None, height=60, size_hint_x=None, width=163)
         header.add_widget(image)
         return header

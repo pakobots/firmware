@@ -1,0 +1,7 @@
+Package: pakobots
+Architecture: all
+Maintainer: Pako Bots
+Depends:
+Priority: optional
+Version: 1.0.0
+Description: ESP32 flash tool

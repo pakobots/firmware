@@ -1,9 +1,16 @@
 # -*- mode: python -*-
 
-from kivy.deps import sdl2, glew
+import os,platform
+
+binaryDependencies=[]
+
+if platform.system() == 'Windows':
+  from kivy.deps import sdl2, glew
+  binaryDependencies = (sdl2.dep_bins + glew.dep_bins)
+if platform.system() == 'Linux':
+  from requests.packages import urllib3
 
 block_cipher = None
-
 
 a = Analysis(['main.py'],
              pathex=['C:\\Users\\maumock\\Desktop\\firmware'],
@@ -16,8 +23,10 @@ a = Analysis(['main.py'],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
              cipher=block_cipher)
+
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
+
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
@@ -26,11 +35,12 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           console=False , icon='img\\logo.ico')
-coll = COLLECT(exe, '',
+
+coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
                a.datas,
-               *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
+               *[Tree(p) for p in binaryDependencies],
                strip=False,
                upx=True,
                name='PakoBots')
