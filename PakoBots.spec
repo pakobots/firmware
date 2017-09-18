@@ -3,12 +3,15 @@
 import os,platform
 
 binaryDependencies=[]
+binaryExcludes=[]
 
 if platform.system() == 'Windows':
   from kivy.deps import sdl2, glew
   binaryDependencies = (sdl2.dep_bins + glew.dep_bins)
 if platform.system() == 'Linux':
   from requests.packages import urllib3
+if platform.system() == 'Darwin':
+  binaryExcludes = ['_tkinter', 'Tkinter', 'enchant', 'twisted']
 
 block_cipher = None
 
@@ -44,3 +47,8 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                name='PakoBots')
+
+app = BUNDLE(coll,
+            name='PakoBots.app',
+            icon=None,
+            bundle_identifier='com.PakoBots')
