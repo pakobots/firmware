@@ -114,7 +114,7 @@ class Driver():
         for i, p in enumerate(ports):
             # If a robot is found just exit for today.
             # In the future all robots will be caputred and programmed
-            if i > 0:
+            if len(out) > 0:
                 return out
             self.window.setMessage('Looking for robot on USB port %s' % (p))
             self.window.setPercent((i + 1) / float(len(ports)) * 100)
@@ -253,7 +253,6 @@ class RootWidget(GridLayout):
         self.message.text = '[color=333333]%s[/color]' % (message)
 
     def setPercent(self, percent):
-        print('setting percent of progress bar')
         self.percent.value = percent
 
     def setLoading(self, isLoading):
