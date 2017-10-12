@@ -9,6 +9,13 @@ The firmware repository contains code used to control the robot directly. Please
 
 
 
+###
+
+###
+
+###
+
+
 ![OSI Certified](http://www.samurajdata.se/opensource/mirror/trademarks/osi-certified/web/osi-certified-90x75.png)
 
 OSI Certified Open Source Software
