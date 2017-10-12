@@ -17,7 +17,6 @@
 
 // GPIO BOARD SETUPS Defined in make menuconfig
 #include "sdkconfig.h"
-#include CONFIG_ESP32_DEV_BOARD_VERSION
 #include "robot.h"
 
 #include <stdio.h>
