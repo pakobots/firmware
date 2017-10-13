@@ -1,5 +1,9 @@
 # Pako Bot Firmware
 
+![OSI Certified](http://www.samurajdata.se/opensource/mirror/trademarks/osi-certified/web/osi-certified-90x75.png)
+
+OSI Certified Open Source Software
+
 ## ESP32
 
 ### Build Environment
