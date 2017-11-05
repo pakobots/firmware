@@ -52,6 +52,7 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.progressbar import ProgressBar
 
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class Release():
     bootloader = ''
@@ -240,7 +241,7 @@ class RootWidget(GridLayout):
 
     percent = ProgressBar(value=0, max=100)
     message = Label(text='', markup=True)
-    refresh = Button(background_normal=os.getcwd() + '/img/refresh.png', background_down=os.getcwd() + '/img/refresh_over.png', size_hint_x=None,
+    refresh = Button(background_normal=SCRIPT_DIR + '/img/refresh.png', background_down=SCRIPT_DIR + '/img/refresh_over.png', size_hint_x=None,
                      width=136, size_hint_y=None, height=35)
     loadingPanel = AnchorLayout()
 
@@ -268,7 +269,7 @@ class RootWidget(GridLayout):
     def buildHeader(self):
         header = AnchorLayout(anchor_x='left', anchor_y='center',
                               size_hint_y=None, height=60, size_hint_x=None)
-        image = Image(source=os.getcwd() + '/img/logo.png', allow_stretch=True, keep_ratio=True,
+        image = Image(source=SCRIPT_DIR + '/img/logo.png', allow_stretch=True, keep_ratio=True,
                       size_hint_y=None, height=60, size_hint_x=None, width=163)
         header.add_widget(image)
         return header

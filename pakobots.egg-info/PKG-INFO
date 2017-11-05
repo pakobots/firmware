@@ -1,0 +1,34 @@
+Metadata-Version: 1.1
+Name: pakobots
+Version: 1.2.1
+Summary: Pako Bots Flasher
+Home-page: http://invent.pakobots.com
+Author: Pako Bots a division of Origami 3
+Author-email: tech@origami3.com
+License: GPL
+Description: Pako Bot Flash GUI
+        ==================
+        
+        This branch contains the code for the ESP32 flash GUI application.
+        
+        ----
+        
+        ## Lastest Releases
+        `Latest Release <https://github.com/pakobots/firmware/releases>`_
+        
+        `OSI Certified <http://www.samurajdata.se/opensource/mirror/trademarks/osi-certified/web/osi-certified-90x75.png>`_
+        
+        OSI Certified Open Source Software
+        
+Keywords: robot esp32 flash programming pako bots
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Robot Enthusiests
+Classifier: Topic :: Software Development :: esp32 flash tool
+Classifier: License :: OSI Approved :: GPL License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
