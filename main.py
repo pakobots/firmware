@@ -142,6 +142,8 @@ class Driver():
         result = []
         for port in ports:
             try:
+                if 'Bluetooth' in port:
+                    continue
                 s = serial.Serial(port)
                 s.close()
                 result.append(port)
@@ -180,7 +182,7 @@ class Driver():
         size_id = flash_id >> 16
         flash_size = esptool.DETECTED_FLASH_SIZES.get(size_id)
 
-        stub.change_baud(921600)
+        # stub.change_baud(921600)
 
         self.flash('bootloader', stub, bootloader, 0x1000)
         self.flash('partitions', stub, partitions, 0x8000)
