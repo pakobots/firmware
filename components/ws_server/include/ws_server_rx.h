@@ -15,32 +15,19 @@
  *  along with Pako Bots division of Origami 3 Firmware.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WS_PACKET_TASK_H_
-#define _WS_PACKET_TASK_H_
+#ifndef _WS_SERVER_RX_H_
+#define _WS_SERVER_RX_H_
 
 #include "sdkconfig.h"
-#include "lwip/api.h"
+#include <stdint.h>
 
-#define WS_MASK_L  0x4  /**< \brief Length of MASK field in WebSocket Header*/
+#define WS_SERVER_TASK_RX_NAME        "ws_server_rx"
+#define WS_SERVER_TASK_STACK_WORDS 10240
+#define WS_SERVER_TASK_PRORIOTY    8
 
-/** \brief Websocket frame header type*/
-typedef struct {
-								uint8_t opcode:WS_MASK_L;
-								uint8_t reserved : 3;
-								uint8_t FIN : 1;
-								uint8_t payload_length : 7;
-								uint8_t mask : 1;
-} WS_frame_header_t;
+#define WS_SERVER_RECV_BUF_LEN     512
+#define WS_SERVER_PORT             80
 
-/** \brief Websocket frame type*/
-typedef struct {
-								struct netconn*  conenction;
-								WS_frame_header_t frame_header;
-								size_t payload_length;
-								char*    payload;
-}WebSocket_frame_t;
-
-err_t ws_write_data(char* p_data, size_t length);
-void ws_server(void *pvParameters);
+void ws_server_rx_start(void);
 
 #endif

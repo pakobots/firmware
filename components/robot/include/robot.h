@@ -19,11 +19,22 @@
 #define _ROBOT_H_
 
 #include "sdkconfig.h"
+#include "stdint.h"
+#include <stdio.h>
 
 // GPIO PINS
-#define LED_RED         15
+#define LED_RED         2
 #define LED_GRN         4
-#define LED_BLU         2
+#define LED_BLU         15
+
+#define LEDC_LS_TIMER          LEDC_TIMER_1
+#define LEDC_LS_MODE           LEDC_LOW_SPEED_MODE
+#define LEDC_LS_CH0_GPIO       (LED_BLU)
+#define LEDC_LS_CH0_CHANNEL    LEDC_CHANNEL_0
+#define LEDC_LS_CH1_GPIO       (LED_GRN)
+#define LEDC_LS_CH1_CHANNEL    LEDC_CHANNEL_1
+#define LEDC_LS_CH2_GPIO       (LED_RED)
+#define LEDC_LS_CH2_CHANNEL    LEDC_CHANNEL_2
 
 #define MOTOR_PWM01     13
 #define MOTOR_PWM02     25
@@ -33,8 +44,14 @@
 #define MOTOR_BIN1      27
 #define MOTOR_BIN2      26
 
-void robot_enable(void);
-void robot_cmd(char *);
+typedef void (*tx_func)(char *data, size_t length);
+
+void
+robot_enable(void);
+
+void
+robot_cmd(char * data, size_t length);
+
 void
 robot_fwd(void);
 
@@ -58,12 +75,24 @@ void
 robot_stop(void);
 
 void
-robot_light_blue(int);
+robot_connected(tx_func tx);
 
 void
-robot_light_red(int);
+robot_disconnected(void);
+
+int
+robot_name(char * buf);
 
 void
-robot_light_green(int);
+robot_light_blue(uint8_t on);
+
+void
+robot_light_red(uint8_t on);
+
+void
+robot_light_green(uint8_t on);
+
+void
+robot_light_color(uint8_t red, uint8_t blue, uint8_t green);
 
 #endif

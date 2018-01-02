@@ -18,11 +18,16 @@
 #ifndef _STORAGE_H_
 #define _STORAGE_H_
 
+#include <stdio.h>
+
 #define PROPERTIES_STORAGE_KEY "props"
 
 char * storage_get(char * store, char * key, char * value, size_t* len);
 int storage_len(char * store, char * key, size_t* len);
 int storage_set(char * store, char * key, char * value);
 void storage_enable(void);
+int storage_init_upgrade(size_t size);
+int storage_upgrade(const void * data, size_t size);
+int storage_fin_upgrade(void);
 
 #endif

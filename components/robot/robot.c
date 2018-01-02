@@ -18,6 +18,7 @@
 // GPIO BOARD SETUPS Defined in make menuconfig
 #include "sdkconfig.h"
 #include "robot.h"
+#include "storage.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,18 +29,60 @@
 #include "sdkconfig.h"
 // MCPWM
 #include "driver/mcpwm.h"
+#include "driver/ledc.h"
 #include "soc/mcpwm_reg.h"
 #include "soc/mcpwm_struct.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+
+#define COLOR_FUNC_FADE 0
+#define COLOR_FUNC_SOLID 1
 
 #define MOTOR_MIN_SPEED 15
-#define GPIO_MOTOR_PIN_SEL \
-    ((1 << MOTOR_AIN1) | (1 << MOTOR_AIN2) | (1 << MOTOR_BIN1) | (1 << MOTOR_BIN2) \
-    | (1 << LED_RED) | (1 << LED_GRN) | (1 << LED_BLU))
+#define GPIO_MOTOR_PIN_SEL                                                          \
+    ( (1 << MOTOR_AIN1) | (1 << MOTOR_AIN2) | (1 << MOTOR_BIN1) | (1 << MOTOR_BIN2) \
+      | (1 << LED_RED) | (1 << LED_GRN) | (1 << LED_BLU) )
 
-const static char * TAG = "ROBOT";
+typedef struct {
+    uint8_t  channel;
+    uint8_t  gpio;
+    uint16_t duty;
+} ledc_info_t;
+
+typedef void (*color_func)(void);
+
+static int MODE_FW_UPDATE = 0;
+static tx_func TX_FUNC;
+static uint16_t COLOR_MOD[3] = {0,0,0};
+static QueueHandle_t COLORS;
+static QueueHandle_t COLORS_FUNC;
+static color_func COLOR_EFFECTS[2];
+static ledc_info_t ledc_ch[3] = {
+    {
+        .channel = LEDC_LS_CH0_CHANNEL,
+        .gpio = LEDC_LS_CH0_GPIO,
+        .duty = 0
+    },{
+        .channel = LEDC_LS_CH1_CHANNEL,
+        .gpio = LEDC_LS_CH1_GPIO,
+        .duty = 0
+    },{
+        .channel = LEDC_LS_CH2_CHANNEL,
+        .gpio = LEDC_LS_CH2_GPIO,
+        .duty = 5000
+    }
+};
+
+static uint16_t ledc_fade_timeout = 1000;
+static uint16_t ledc_fade_delay_top = 1500;
+static uint16_t ledc_fade_delay_bottom = 4500;
+
+const static char *TAG = "ROBOT";
 
 void
-robot_fwd(){
+robot_fwd()
+{
     ESP_LOGI(TAG, "FORWARD");
     gpio_set_level(MOTOR_AIN1, 1);
     gpio_set_level(MOTOR_BIN1, 1);
@@ -47,25 +90,35 @@ robot_fwd(){
     gpio_set_level(MOTOR_BIN2, 0);
 }
 
+
 void
-robot_speed(float left_motor, float right_motor){
-    if (left_motor < MOTOR_MIN_SPEED) {
+robot_speed(float left_motor, float right_motor)
+{
+    if (left_motor < MOTOR_MIN_SPEED)
+    {
         mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A);
-    } else {
+    }
+    else
+    {
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, left_motor);
         mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);
     }
 
-    if (right_motor < MOTOR_MIN_SPEED) {
+    if (right_motor < MOTOR_MIN_SPEED)
+    {
         mcpwm_set_signal_low(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B);
-    } else {
+    }
+    else
+    {
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, right_motor);
         mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, MCPWM_DUTY_MODE_0);
     }
 }
 
+
 void
-robot_bck(){
+robot_bck()
+{
     ESP_LOGI(TAG, "BACK");
     gpio_set_level(MOTOR_AIN1, 0);
     gpio_set_level(MOTOR_BIN1, 0);
@@ -73,8 +126,10 @@ robot_bck(){
     gpio_set_level(MOTOR_BIN2, 1);
 }
 
+
 void
-robot_left(){
+robot_left()
+{
     ESP_LOGI(TAG, "LEFT");
     gpio_set_level(MOTOR_AIN1, 1);
     gpio_set_level(MOTOR_BIN1, 0);
@@ -82,8 +137,10 @@ robot_left(){
     gpio_set_level(MOTOR_BIN2, 0);
 }
 
+
 void
-robot_left_spin(){
+robot_left_spin()
+{
     ESP_LOGI(TAG, "LEFT");
     gpio_set_level(MOTOR_AIN1, 1);
     gpio_set_level(MOTOR_BIN1, 0);
@@ -91,8 +148,10 @@ robot_left_spin(){
     gpio_set_level(MOTOR_BIN2, 1);
 }
 
+
 void
-robot_right(){
+robot_right()
+{
     ESP_LOGI(TAG, "RIGHT");
     gpio_set_level(MOTOR_AIN1, 0);
     gpio_set_level(MOTOR_BIN1, 1);
@@ -100,8 +159,10 @@ robot_right(){
     gpio_set_level(MOTOR_BIN2, 0);
 }
 
+
 void
-robot_right_spin(){
+robot_right_spin()
+{
     ESP_LOGI(TAG, "RIGHT");
     gpio_set_level(MOTOR_AIN1, 0);
     gpio_set_level(MOTOR_BIN1, 1);
@@ -109,8 +170,10 @@ robot_right_spin(){
     gpio_set_level(MOTOR_BIN2, 0);
 }
 
+
 void
-robot_stop(){
+robot_stop()
+{
     ESP_LOGI(TAG, "STOP");
     robot_speed(0.0, 0.0);
     gpio_set_level(MOTOR_AIN1, 0);
@@ -119,38 +182,111 @@ robot_stop(){
     gpio_set_level(MOTOR_BIN2, 0);
 }
 
+
 void
-robot_light_blue(int on){
-    gpio_set_level(LED_BLU, on);
+robot_connected(tx_func tx)
+{
+    if (tx)
+    {
+        TX_FUNC = tx;
+    }
+
+    robot_light_color(0,255,0);
+    static char func = COLOR_FUNC_SOLID;
+    xQueueOverwrite(COLORS_FUNC, &func);
+}
+
+
+void robot_disconnected()
+{
+    TX_FUNC = NULL;
+    robot_light_color(0,0,255);
+    static char func = COLOR_FUNC_FADE;
+    xQueueOverwrite(COLORS_FUNC, &func);
+}
+
+
+void
+robot_light_blue(uint8_t on)
+{
+    COLOR_MOD[0] = 12;
+    COLOR_MOD[1] = 12;
+    COLOR_MOD[2] = on ? 5000 : 0;
+    xQueueOverwrite(COLORS, &COLOR_MOD);
+}
+
+
+void
+robot_light_red(uint8_t on)
+{
+    COLOR_MOD[0] = on ? 5000 : 0;
+    COLOR_MOD[1] = 12;
+    COLOR_MOD[2] = 12;
+    xQueueOverwrite(COLORS, &COLOR_MOD);
+}
+
+
+void
+robot_light_green(uint8_t on)
+{
+    COLOR_MOD[0] = 12;
+    COLOR_MOD[1] = on ? 5000 : 0;
+    COLOR_MOD[2] = 12;
+    xQueueOverwrite(COLORS, &COLOR_MOD);
+}
+
+
+void
+robot_light_color(uint8_t red, uint8_t green, uint8_t blue)
+{
+    COLOR_MOD[0] = red * 19;
+    COLOR_MOD[1] = green * 17;
+    COLOR_MOD[2] = blue * 18;
+    xQueueOverwrite(COLORS, &COLOR_MOD);
+}
+
+
+int
+robot_name(char *buf)
+{
+    size_t len;
+    storage_len(PROPERTIES_STORAGE_KEY, "name", &len);
+    if (len > 0)
+    {
+        storage_get(PROPERTIES_STORAGE_KEY, "name", buf, &len);
+    }
+
+    return len;
 }
 
 void
-robot_light_red(int on){
-    gpio_set_level(LED_RED, on);
-}
+robot_cmd(char *data, size_t length)
+{
+    if (MODE_FW_UPDATE)
+    {
+        return;
+    }
 
-void
-robot_light_green(int on){
-    gpio_set_level(LED_GRN, on);
-}
-
-void
-robot_cmd(char * data){
-    char cmd  = data[0];
+    char cmd = data[0];
     char ctrl = data[1];
     char p0;
-    int left, right;
+    int num1, num2, num3;
 
-    switch (cmd) {
+    switch (cmd)
+    {
+        case 'U':
+            MODE_FW_UPDATE = 1;
+            break;
         case 'S':
-            sscanf(data, "S%d|%d", &left, &right);
-            left  = left < 0 ? 0 : left > 100 ? 100 : left;
-            right = right < 0 ? 0 : right > 100 ? 100 : right;
-            robot_speed(left, right);
-            return;
+            sscanf(data, "S%d|%d", &num1, &num2);
+            num1 = num1 < 0 ? 0 : num1 > 100 ? 100 : num1;
+            num2 = num2 < 0 ? 0 : num2 > 100 ? 100 : num2;
+            robot_speed(num1, num2);
+            break;
         case 'M':
             ESP_LOGI(TAG, "MOVE");
-            switch (ctrl) {
+            switch (ctrl)
+            {
                 case 'F':
                     robot_fwd();
                     break;
@@ -166,15 +302,28 @@ robot_cmd(char * data){
                 case 'S':
                     robot_stop();
                     break;
-            }
+            } /* switch */
+
+            break;
+        case 'C':
+            sscanf(data, "C%d|%d|%d", &num1, &num2, &num3);
+            num1 = num1 < 0 ? 0 : num1 > 255 ? 255 : num1;
+            num2 = num2 < 0 ? 0 : num2 > 255 ? 255 : num2;
+            num3 = num3 < 0 ? 0 : num3 > 255 ? 255 : num3;
+            robot_light_color(num1, num2, num3);
             break;
         case 'L':
-            if (strlen(data) > 2) {
+            if (strlen(data) > 2)
+            {
                 p0 = data[2];
-            } else {
+            }
+            else
+            {
                 p0 = '0';
             }
-            switch (ctrl) {
+
+            switch (ctrl)
+            {
                 case 'R':
                     robot_light_red(p0 == '1' ? 1 : 0);
                     break;
@@ -185,12 +334,103 @@ robot_cmd(char * data){
                     robot_light_blue(p0 == '1' ? 1 : 0);
                     break;
             }
+
             break;
-    }
+    } /* switch */
 } /* cmd */
 
+
+static void chkQueue(int timeout)
+{
+    uint16_t clr[3];
+    if ( xQueueReceive(COLORS, &clr, timeout) )
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (clr[i] != 12)
+            {
+                ledc_ch[i].duty = clr[i];
+            }
+        }
+    }
+}
+
+
+static void color_func_solid()
+{
+    chkQueue(1000);
+    for (int i = 0; i < 3; i++)
+    {
+        ledc_set_fade_with_time(LEDC_LS_MODE, ledc_ch[i].channel, ledc_ch[i].duty, ledc_fade_timeout);
+        ledc_fade_start(LEDC_LS_MODE, ledc_ch[i].channel, LEDC_FADE_NO_WAIT);
+    }
+}
+
+
+static void color_func_fade()
+{
+    chkQueue(0);
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        ledc_set_fade_with_time(LEDC_LS_MODE, ledc_ch[i].channel, ledc_ch[i].duty, ledc_fade_timeout);
+        ledc_fade_start(LEDC_LS_MODE, ledc_ch[i].channel, LEDC_FADE_NO_WAIT);
+    }
+
+    if (ledc_fade_delay_top > 100)
+    {
+        vTaskDelay(ledc_fade_delay_top / portTICK_PERIOD_MS);
+    }
+
+    chkQueue(0);
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        ledc_set_fade_with_time(LEDC_LS_MODE, ledc_ch[i].channel, 0, ledc_fade_timeout);
+        ledc_fade_start(LEDC_LS_MODE, ledc_ch[i].channel, LEDC_FADE_NO_WAIT);
+    }
+
+    if (ledc_fade_delay_bottom > 100)
+    {
+        vTaskDelay(ledc_fade_delay_bottom / portTICK_PERIOD_MS);
+    }
+}
+
+
+static void ledc_task()
+{
+    //initialize fade service.
+    ledc_fade_func_install(0);
+    color_func func = color_func_fade;
+    uint8_t effect;
+    while (1)
+    {
+        if ( xQueueReceive(COLORS_FUNC, &effect, 0) )
+        {
+            func = COLOR_EFFECTS[effect];
+        }
+
+        func();
+    }
+}
+
+
+static void monitor_task()
+{
+    const TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
+    while (1)
+    {
+        if (TX_FUNC != NULL)
+        {
+            TX_FUNC("hello",5);
+        }
+
+        vTaskDelay( xDelay );
+    }
+}
+
+
 void
-robot_enable(){
+robot_enable()
+{
     gpio_config_t io_conf;
 
     // disable interrupt
@@ -211,11 +451,42 @@ robot_enable(){
     mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0A, MOTOR_PWM01);
     mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0B, MOTOR_PWM02);
 
+    COLORS = xQueueCreate( 1, sizeof(uint16_t[3]) );
+    COLORS_FUNC = xQueueCreate(1, 1);
+
     mcpwm_config_t pwm_config;
-    pwm_config.frequency    = 1000; // frequency = 500Hz,
-    pwm_config.cmpr_a       = 0;    // duty cycle of PWMxA = 0
-    pwm_config.cmpr_b       = 0;    // duty cycle of PWMxb = 0
+    pwm_config.frequency = 1000;        // frequency = 500Hz,
+    pwm_config.cmpr_a = 0;           // duty cycle of PWMxA = 0
+    pwm_config.cmpr_b = 0;           // duty cycle of PWMxb = 0
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
-    pwm_config.duty_mode    = MCPWM_DUTY_MODE_0;
+    pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);
+
+    ledc_timer_config_t ledc_timer = {
+        .bit_num    = LEDC_TIMER_13_BIT,      //set timer counter bit number
+        .freq_hz    = 5000,           //set frequency of pwm
+        .speed_mode = LEDC_LS_MODE,         //timer mode,
+        .timer_num  = LEDC_LS_TIMER        //timer index
+    };
+
+    ledc_timer_config(&ledc_timer);
+
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        ledc_channel_config_t ledc_channel = {
+            .channel    = ledc_ch[i].channel,
+            .duty       =                  0,
+            .gpio_num   = ledc_ch[i].gpio,
+            .intr_type  = LEDC_INTR_FADE_END,
+            .speed_mode = LEDC_LS_MODE,
+            .timer_sel  = LEDC_LS_TIMER,
+        };
+        ledc_channel_config(&ledc_channel);
+    }
+
+    COLOR_EFFECTS[0] = color_func_fade;
+    COLOR_EFFECTS[1] = color_func_solid;
+
+    xTaskCreate(monitor_task, "ROBOT_MONITOR", 2048, NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(ledc_task, "ROBOT_LED_FADE", 2048, NULL, tskIDLE_PRIORITY + 2, NULL);
 }

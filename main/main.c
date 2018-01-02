@@ -16,7 +16,8 @@
  */
 
 #include "robot.h"
-#include "ws_server.h"
+#include "ws_server_rx.h"
+#include "ws_server_tx.h"
 #include "wifi.h"
 #include "ble.h"
 #include "http_server.h"
@@ -27,7 +28,8 @@
 void
 ap_connected_callback(){
     http_server_start();
-    ws_server_start();
+    ws_server_rx_start();
+    ws_server_tx_start();
 }
 
 void

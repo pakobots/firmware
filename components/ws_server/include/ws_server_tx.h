@@ -15,9 +15,19 @@
  *  along with Pako Bots division of Origami 3 Firmware.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WS_RECEIVE_TASK_H_
-#define _WS_RECEIVE_TASK_H_
+#ifndef _WS_SERVER_TX_H_
+#define _WS_SERVER_TX_H_
 
-void ws_receive(void *pvParameters);
+#include "sdkconfig.h"
+#include <stdint.h>
+
+#define WS_SERVER_TASK_TX_NAME        "ws_server_tx"
+#define WS_SERVER_TASK_STACK_WORDS 10240
+#define WS_SERVER_TASK_PRORIOTY    8
+
+#define WS_SERVER_RECV_BUF_LEN     512
+#define WS_SERVER_PORT             80
+
+void ws_server_tx_start(void);
 
 #endif

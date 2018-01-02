@@ -56,7 +56,8 @@ int
 wifi_event_handler(void * ctx, system_event_t * event){
     wifi_mode_t mode;
 
-    esp_event_process_default(event);
+    // Used in the old firmware
+    // esp_event_process_default(event);
 
     switch (event->event_id) {
         case SYSTEM_EVENT_STA_START:
@@ -78,7 +79,7 @@ wifi_event_handler(void * ctx, system_event_t * event){
             printf("Station disconnected from internal AP.\n");
             xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
             sta_disconnects++;
-            if (sta_disconnects > 20) {
+            if (sta_disconnects > 6) {
                 printf("Switching to AP mode due to too many disconnect errors on AP");
                 wifi_clear_ssid();
                 sta_disconnects = 0;
@@ -315,6 +316,9 @@ wifi_enable(evt_connected_callback evt_callback){
     wifi_init_config_t cnf = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cnf) );
     ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM) );
+
+    wifi_connect("pic_slow", "#for#Ilikegreenjello", false);
+    return;
 
     size_t len = 0;
     storage_len(WIFI_STORAGE_KEY, "ssid", &len);
