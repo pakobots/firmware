@@ -171,7 +171,7 @@ class Driver():
         return Release(latest)
 
     def load(self, chip, release):
-        self.window.setMessage('Loading firmware')
+        self.window.setMessage('Loading firmware: '+release.version)
         self.window.setPercent(0)
         partitions = requests.get(release.partitions, stream=True).raw
         bootloader = requests.get(release.bootloader, stream=True).raw
@@ -184,16 +184,16 @@ class Driver():
 
         # stub.change_baud(921600)
 
-        self.flash('bootloader', stub, bootloader, 0x1000)
-        self.flash('partitions', stub, partitions, 0x8000)
-        self.flash('robot', stub, robot, 0x10000)
+        self.flash('bootloader', stub, bootloader, 0x1000, release)
+        self.flash('partitions', stub, partitions, 0x8000, release)
+        self.flash('robot', stub, robot, 0x10000, release)
 
         stub.hard_reset()
 
-    def flash(self, partitionName, stub, file, address):
+    def flash(self, partitionName, stub, file, address, release):
         if self.stopped.is_set():
             return
-        self.window.setMessage('Reading remote firmware: %s' % (partitionName))
+        self.window.setMessage('Reading remote firmware: "%s"' % (partitionName))
         self.window.setPercent(0)
         image = esptool.pad_to(file.read(), 4)
         calcmd5 = hashlib.md5(image).hexdigest()
@@ -209,7 +209,7 @@ class Driver():
         stub._port.timeout = min(esptool.DEFAULT_TIMEOUT * ratio,
                                  esptool.CHIP_ERASE_TIMEOUT * 2)
 
-        self.window.setMessage('Loading firmware: %s' % (partitionName))
+        self.window.setMessage('Loading firmware "%s" version: %s' % (partitionName,release.version))
         while len(image) > 0:
             if self.stopped.is_set():
                 return
