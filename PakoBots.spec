@@ -50,5 +50,5 @@ coll = COLLECT(exe,
 
 app = BUNDLE(coll,
             name='PakoBots.app',
-            icon=None,
+            icon='icons/icon.icns',
             bundle_identifier='com.PakoBots')
