@@ -11,7 +11,3 @@ pakobots.egg-info/dependency_links.txt
 pakobots.egg-info/entry_points.txt
 pakobots.egg-info/requires.txt
 pakobots.egg-info/top_level.txt
-pakobots/img/logo.ico
-pakobots/img/logo.png
-pakobots/img/refresh.png
-pakobots/img/refresh_over.png
