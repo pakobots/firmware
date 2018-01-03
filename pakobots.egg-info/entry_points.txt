@@ -1,2 +1,3 @@
 [gui_scripts]
 pakobots = pakobots.__main__:main
+

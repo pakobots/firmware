@@ -12,7 +12,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     app=['pakobots/__main__.py'],
     name='pakobots',
-    version='1.0.3',
+    version='1.0.4',
     description='Pako Bots Flasher',
     long_description=long_description,
     url='http://invent.pakobots.com',

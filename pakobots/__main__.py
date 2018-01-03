@@ -2544,6 +2544,8 @@ sX2ymfJTFVqyowu+bOee7AVkbMrtNgkzIaRajLVN/NdHOHefRuLj+R267ywLOYwZLU0DI2E5LxmLa2sv
 
 # CODE COPIED FROM ESPTOOL. PYINSTALLER WAS HAVING ISSUES AND THIS WAS THE LAST RESORT!!
 
+def main():
+    MainApp().run()
 
 if __name__ == '__main__':
     MainApp().run()
