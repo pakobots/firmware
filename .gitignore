@@ -1,7 +1,7 @@
 build
 dist
 node_modules
-#etc/installer_windows-cache/
+etc/installer_windows-cache/
 
 # General
 .DS_Store
