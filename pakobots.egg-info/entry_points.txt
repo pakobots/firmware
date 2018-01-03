@@ -1,3 +1,2 @@
-[console_scripts]
-pakobots = pakobots:main
-
+[gui_scripts]
+pakobots = pakobots.__main__:main

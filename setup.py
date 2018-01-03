@@ -10,6 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
+    app=['pakobots/__main__.py'],
     name='pakobots',
     version='1.0.3',
     description='Pako Bots Flasher',
@@ -32,10 +33,10 @@ setup(
     ],
     packages=['pakobots'],
     keywords='robot esp32 flash programming pako bots',
-    install_requires=['requests', 'esptool', 'kivy', 'pyserial'],
+    install_requires=['requests', 'kivy', 'pyserial'],
     entry_points={
-        'console_scripts': [
-            'pakobots=pakobots:main',
+        'gui_scripts': [
+            'pakobots=pakobots.__main__:main',
         ],
     },
 )

@@ -15,10 +15,10 @@ if platform.system() == 'Darwin':
 
 block_cipher = None
 
-a = Analysis(['main.py'],
+a = Analysis(['pakobots/__main__.py'],
              pathex=['C:\\Users\\maumock\\Desktop\\firmware'],
              binaries=[],
-             datas=[('esptool/esptool.py','esptool'),('esptool/LICENSE','esptool'),('esptool/README.md','esptool'),('pakobots/img/*', 'img'),('LICENSE','.'),('README.md', '.')],
+             datas=[('esptool/esptool.py','esptool'),('esptool/LICENSE','esptool'),('esptool/README.md','esptool'),('img/*', 'img'),('LICENSE','.'),('README.md', '.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -44,7 +44,7 @@ coll = COLLECT(exe,
                a.zipfiles,
                a.datas,
                *[Tree(p) for p in binaryDependencies],
-               strip=False,
+               strip=None,
                upx=True,
                name='PakoBots')
 
