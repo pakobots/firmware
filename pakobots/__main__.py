@@ -21,10 +21,8 @@ from __future__ import print_function, division
 import argparse
 import hashlib
 import inspect
-import os
 import serial
 import struct
-import sys
 import time
 import base64
 import zlib
@@ -45,24 +43,6 @@ import hashlib
 import requests
 import json
 
-# # Used in esptool. Added to enable pyinstaller to pull correct deps
-# import argparse
-# import inspect
-# import struct
-# import base64
-# import shlex
-# import copy
-# import io
-# # Used in esptool. Added to enable pyinstaller to pull correct deps
-#
-# sys.path.append('./esptool')
-# from esptool import ESPLoader
-# from esptool import FatalError
-# from esptool import DETECTED_FLASH_SIZES
-# from esptool import DEFAULT_TIMEOUT
-# from esptool import CHIP_ERASE_TIMEOUT
-# from esptool import pad_to
-
 from distutils.version import StrictVersion
 
 kivy.require('1.10.0')  # replace with your current kivy version !
@@ -75,6 +55,11 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.progressbar import ProgressBar
+
+if getattr(sys, 'frozen', False):
+    applicaton_path = sys._MEIPASS
+else:
+    application_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Release():
     bootloader = ''
@@ -265,7 +250,7 @@ class RootWidget(GridLayout):
 
     percent = ProgressBar(value=0, max=100)
     message = Label(text='', markup=True)
-    refresh = Button(background_normal=os.getcwd() + '/img/refresh.png', background_down=os.getcwd() + '/img/refresh_over.png', size_hint_x=None,
+    refresh = Button(background_normal=application_path + '/img/refresh.png', background_down=application_path + '/img/refresh_over.png', size_hint_x=None,
                      width=136, size_hint_y=None, height=35)
     loadingPanel = AnchorLayout()
 
@@ -293,7 +278,7 @@ class RootWidget(GridLayout):
     def buildHeader(self):
         header = AnchorLayout(anchor_x='left', anchor_y='center',
                               size_hint_y=None, height=60, size_hint_x=None)
-        image = Image(source=os.getcwd() + '/img/logo.png', allow_stretch=True, keep_ratio=True,
+        image = Image(source=application_path + '/img/logo.png', allow_stretch=True, keep_ratio=True,
                       size_hint_y=None, height=60, size_hint_x=None, width=163)
         header.add_widget(image)
         return header
@@ -2489,7 +2474,7 @@ JBJfFLGXiqfI4X50S3B8AqoB4o3kocKH6tVTttaVFd14Aq7un96DaD0a1CnXhYSc3QVutfVYX6Erhpmk
 GMV2dnFMpGlQIujjY3DGqGLWzfWD1AX82CDY72y6STpa/0YlsxwB3O4l5Z2UIh44K5xn6oefSHbANjJPIS9bPF3zIrrsRXzZi9FlL5LLXqS9F9jI0Awtogu0oc82JoBqn/CN58qD004RmHvap/T3zEjDPTGRL2At\
 DZoMkPEO6hbzGLekrH2rxb4kKjwmM/t1nwotwhWG1PkQHxyF4FPKv/T7LjzK83LB/hmpYDos4315/h30b2n4IxNWv7xNvFrC4V4tx7giYXw8MwUZQpy7ePqc9nvNkqzi+AEkmYrwA4l+FALCmZz2B8GFH2W8Q6Ne\
 9FhEWdArfJYDaZB+q2p1j0yEG9tY5dvIMUFfziHwORsFoehiZyObLzAqDSiCv+hs3yZS1aiUcxVYI1OhQDi9xtZp+dPxT4NjPuen8/ni2AdZqBcMWXqTWCgbReY0ORZreDfo1JiKeGZ9RLGBrJaDJfjF9j6ohamj\
-l2vZwjWZl9qEeOWAULoDjKAdDGJVUw1jaSM1QW4V8knGmDUcC31ZifzsdszbseFgMVpDARzM5l6Q2yg81l3wUt3ssx2fSOo/1MmJGa8D4XdOXwRs9kQ6rh1/QPcVSFCu4LlqOl24D4x2cwD5PMjRZeaQKxOBUYkH\
+    l2vZwjWZl9qEeOWAULoDjKAdDGJVUw1jaSM1QW4V8knGmDUcC31ZifzsdszbseFgMVpDARzM5l6Q2yg81l3wUt3ssx2fSOo/1MmJGa8D4XdOXwRs9kQ6rh1/QPcVSFCu4LlqOl24D4x2cwD5PMjRZeaQKxOBUYkH\
 4YvtXejfis65446G/bs4nMNBQP5R7zSXPUNgTgWKMcfOCwkH/N7nawAqPmtEhYFfchEIbJUmb/ekWA14gEmjF3UDVMTG4G+08kyKkXENRw+ezecvf333ASHho1FCos7Z38qJ2vP+rEILMpY+F86FKvlKudeCe6aW\
 OxCJzlUHzsFBPkQSiLddiJmdH83n2S5e4+DhMer2UW7jT+SaQ+C55kAabs1nzjk0nUH1AIQ7YT83+XHIuxVP5eE7Xp0grBaYQ++ge4mFDj28psLDayo8vKbCu0M1l4rKp52rT4hFTtmqC91bYcJ1V8RAVqjRnXsV\
 8LqFwWDzZMpXUmAReTOxeRz3ngXPGu38+OvOZQx448TJstPDubZBheTfDjYCs5TMuc9Grb/cBvxqczNMFruXwYzNnTQPqJoGbzJRnU8z+tSBHfe7Ytsll2tDBnL2FZe0xANsmLCL+jdRyHk2Kilegsj8gB80qtMV\
