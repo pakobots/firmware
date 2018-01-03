@@ -247,7 +247,6 @@ class Driver():
 
 
 class RootWidget(GridLayout):
-
     percent = ProgressBar(value=0, max=100)
     message = Label(text='', markup=True)
     refresh = Button(background_normal=application_path + '/img/refresh.png', background_down=application_path + '/img/refresh_over.png', size_hint_x=None,

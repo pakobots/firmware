@@ -1,5 +1,3 @@
-# Include the license file
 include LICENSE
-
-# Include the data files
-#recursive-include data *
+recursive-include img *
+recursive-include esptool *

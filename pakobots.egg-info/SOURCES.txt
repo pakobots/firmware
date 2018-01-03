@@ -3,6 +3,13 @@ MANIFEST.in
 README.rst
 setup.cfg
 setup.py
+esptool/LICENSE
+esptool/README.md
+esptool/esptool.py
+img/logo.ico
+img/logo.png
+img/refresh.png
+img/refresh_over.png
 pakobots/__init__.py
 pakobots/__main__.py
 pakobots.egg-info/PKG-INFO
