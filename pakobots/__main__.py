@@ -57,7 +57,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.progressbar import ProgressBar
 
 if getattr(sys, 'frozen', False):
-    applicaton_path = sys._MEIPASS
+    application_path = sys._MEIPASS
 else:
     application_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
