@@ -317,9 +317,6 @@ wifi_enable(evt_connected_callback evt_callback){
     ESP_ERROR_CHECK(esp_wifi_init(&cnf) );
     ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM) );
 
-    wifi_connect("pic_slow", "#for#Ilikegreenjello", false);
-    return;
-
     size_t len = 0;
     storage_len(WIFI_STORAGE_KEY, "ssid", &len);
     if (len < 2) {
