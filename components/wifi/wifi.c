@@ -32,8 +32,6 @@
 
 const static char * TAG = "WIFI";
 
-#define WIFI_STORAGE_KEY "wifi"
-
 evt_connected_callback connected_callback;
 static EventGroupHandle_t wifi_event_group;
 const static int CONNECTED_BIT = BIT0;
@@ -48,8 +46,8 @@ wifi_ap(void);
 
 void
 wifi_clear_ssid(){
-    storage_set(WIFI_STORAGE_KEY, "ssid", "");
-    storage_set(WIFI_STORAGE_KEY, "pass", "");
+    storage_set(PROPERTIES_STORAGE_KEY, "ssid", "");
+    storage_set(PROPERTIES_STORAGE_KEY, "pass", "");
 }
 
 int
@@ -269,8 +267,8 @@ wifi_connect(char * ssid, char * password, unsigned int persist){
     esp_wifi_stop();
 
     if (persist) {
-        storage_set(WIFI_STORAGE_KEY, "ssid", ssid);
-        storage_set(WIFI_STORAGE_KEY, "pass", password);
+        storage_set(PROPERTIES_STORAGE_KEY, "ssid", ssid);
+        storage_set(PROPERTIES_STORAGE_KEY, "pass", password);
     }
 
     wifi_config_t wifi_config = {
@@ -317,26 +315,23 @@ wifi_enable(evt_connected_callback evt_callback){
     ESP_ERROR_CHECK(esp_wifi_init(&cnf) );
     ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM) );
 
-    wifi_connect("slow_bot", "simpleTestingToday", false);
-    return;
-
     size_t len = 0;
-    storage_len(WIFI_STORAGE_KEY, "ssid", &len);
+    storage_len(PROPERTIES_STORAGE_KEY, "ssid", &len);
     if (len < 2) {
         printf("We don't have a ssid set for the wifi station. Need to switch to ap mode\n");
         wifi_ap();
     } else {
         char ssid[len + 1];
         ssid[len] = '\0';
-        storage_get(WIFI_STORAGE_KEY, "ssid", (char *) &ssid, &len);
+        storage_get(PROPERTIES_STORAGE_KEY, "ssid", (char *) &ssid, &len);
         len = 0;
-        storage_len(WIFI_STORAGE_KEY, "pass", &len);
+        storage_len(PROPERTIES_STORAGE_KEY, "pass", &len);
         char pass[len + 1];
         pass[len] = '\0';
         if (len == 0) {
             pass[0] = '\0';
         } else {
-            storage_get(WIFI_STORAGE_KEY, "pass", (char *) &pass, &len);
+            storage_get(PROPERTIES_STORAGE_KEY, "pass", (char *) &pass, &len);
         }
         printf("Connecting to wifi ap: %s %d\n", ssid, len);
         wifi_connect(ssid, pass, false);
