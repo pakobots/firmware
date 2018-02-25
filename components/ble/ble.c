@@ -441,12 +441,12 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     }
     case ESP_GATTS_WRITE_EVT:
     {
-        ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d", param->write.conn_id, param->write.trans_id, param->write.handle);
+        // ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d", param->write.conn_id, param->write.trans_id, param->write.handle);
         if (!param->write.is_prep)
         {
-            ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
-            esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
-            if (param->write.len > 2)
+            // ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
+            // esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
+            if (param->write.len > 1)
             {
                 int len = param->write.len < 20 ? param->write.len : 20;
                 char cmd[len + 1];
@@ -469,7 +469,7 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
                 }
                 else
                 {
-                    ESP_LOGI(GATTS_TAG, "Robot cmd %s", cmd);
+                    // ESP_LOGI(GATTS_TAG, "Robot cmd %s", cmd);
                     robot_cmd(cmd, sizeof(cmd));
                 }
             }

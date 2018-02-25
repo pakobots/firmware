@@ -243,6 +243,7 @@ void robot_cmd(char *data, size_t length)
     switch (cmd)
     {
     case 'U':
+        ESP_LOGI(TAG, "Update firmware");
         MODE_FW_UPDATE = 1;
         break;
     case 'N':
@@ -252,11 +253,11 @@ void robot_cmd(char *data, size_t length)
         }
         memcpy(str1, &data[1], len - 1);
         str1[len - 1] = '\0';
-        printf("Setting Robot Name:%s\n", str1);
+        ESP_LOGI(TAG, "Setting Robot Name:%s\n", str1);
         storage_set(PROPERTIES_STORAGE_KEY, "name", str1);
         break;
     case 'W':
-        printf("Setting Robot WIFI Settings\n");
+        ESP_LOGI(TAG, "Setting Robot WIFI Settings\n");
         num1 = strchr(data, '|') - data;
         if (num1 < 2)
         {
@@ -276,7 +277,7 @@ void robot_cmd(char *data, size_t length)
         robot_speed(num1, num2);
         break;
     case 'M':
-        ESP_LOGI(TAG, "MOVE");
+        ESP_LOGI(TAG, "MOVE %d", ctrl);
         switch (ctrl)
         {
         case 'F':
